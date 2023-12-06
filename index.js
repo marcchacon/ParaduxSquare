@@ -406,12 +406,11 @@ function getMoves(piece, secondPiece) {
  */
 function winCheck() {
     var game = getGameboard()
-
+    var winner;
     //Check rows
     for (var i = 0; i < game.length; i++) {
         var p1 = 0;
         var p2 = 0;
-        var co = 0;
         for (var j = 0; j < game[i].length; j++) {
             if (p1 == 4 || p2 == 4 || co == 4) break;
             switch (game[i][j]) {
@@ -423,36 +422,48 @@ function winCheck() {
                     p1=0;
                     p2++;
                     break;
+                default:
+                    p1=0;
+                    p2=0;
+                    break;
             }
         }
-        if (p1 == 4 || p2 == 4 || co == 4) {
+        if (p1 == 4 || p2 == 4) {
             win = true;
-            document.getElementById("turn").innerHTML = `Player ${game[i][j]} has won!`;
+            winner = p1 == 4 ? "P1" : "P2";
+            document.getElementById("turn").innerHTML = `Player ${winner} has won!`;
             return;
         }
     }
     //Check columns
-    for (var i = 0; i < game.length; i++) {
-        var p1 = 0;
-        var p2 = 0;
-        var co = 0;
-        for (var j = 0; j < game[i].length; j++) {
-            if (p1 == 4 || p2 == 4 || co == 4) break;
-            switch (game[j][i]) {
-                case "1":
-                    p1++;
-                    p2=0;
-                    break;
-                case "2":
-                    p1=0;
-                    p2++;
-                    break;
+    if (!win) {
+        for (var i = 0; i < game.length; i++) {
+            var p1 = 0;
+            var p2 = 0;
+            var co = 0;
+            for (var j = 0; j < game[i].length; j++) {
+                if (p1 == 4 || p2 == 4 || co == 4) break;
+                switch (game[j][i]) {
+                    case "1":
+                        p1++;
+                        p2=0;
+                        break;
+                    case "2":
+                        p1=0;
+                        p2++;
+                        break;
+                    default:
+                        p1=0;
+                        p2=0;
+                        break;
+                }
             }
-        }
-        if (p1 == 4 || p2 == 4 || co == 4) {
-            win = true;
-            document.getElementById("turn").innerHTML = `Player ${turn[0]} has won!`;
-            return;
+            if (p1 == 4 || p2 == 4) {
+                win = true;
+                winner = p1 == 4 ? "P1" : "P2";
+                document.getElementById("turn").innerHTML = `Player ${winner} has won!`;
+                return;
+            }
         }
     }
 }
