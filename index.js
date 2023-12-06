@@ -27,8 +27,9 @@ var player2 = jsboard.piece({ text: "P2", textIndent: "-9999px", background: "bl
 // variables for turns, piece to move and its locs
 var turn = ["P1", "P2"];
 var bindMoveLocs, bindMovePiece, firstPiece;
-var gamemode, started, win = false;
+var started, win = false;
 let P1, P2 = [];
+var gamemode = 4;
 
 //Aux functions
 let selectSecondFunction = function () { selectSecond(this); };
@@ -412,7 +413,7 @@ function winCheck() {
         var p1 = 0;
         var p2 = 0;
         for (var j = 0; j < game[i].length; j++) {
-            if (p1 == 4 || p2 == 4 || co == 4) break;
+            if (p1 == gamemode || p2 == gamemode) break;
             switch (game[i][j]) {
                 case "1":
                     p1++;
@@ -428,9 +429,9 @@ function winCheck() {
                     break;
             }
         }
-        if (p1 == 4 || p2 == 4) {
+        if (p1 == gamemode || p2 == gamemode) {
             win = true;
-            winner = p1 == 4 ? "P1" : "P2";
+            winner = p1 == gamemode ? "P1" : "P2";
             document.getElementById("turn").innerHTML = `Player ${winner} has won!`;
             return;
         }
@@ -442,7 +443,7 @@ function winCheck() {
             var p2 = 0;
             var co = 0;
             for (var j = 0; j < game[i].length; j++) {
-                if (p1 == 4 || p2 == 4 || co == 4) break;
+                if (p1 == gamemode || p2 == gamemode) break;
                 switch (game[j][i]) {
                     case "1":
                         p1++;
@@ -458,9 +459,9 @@ function winCheck() {
                         break;
                 }
             }
-            if (p1 == 4 || p2 == 4) {
+            if (p1 == gamemode || p2 == gamemode) {
                 win = true;
-                winner = p1 == 4 ? "P1" : "P2";
+                winner = p1 == gamemode ? "P1" : "P2";
                 document.getElementById("turn").innerHTML = `Player ${winner} has won!`;
                 return;
             }
@@ -504,25 +505,25 @@ function getAdjacent(piece) {
 //Listeners for UI buttons
 document.getElementById("reset").addEventListener("click", function () { resetBoard(true); });
 document.getElementById("gamemodeN").addEventListener("click", function () {
-    gamemode = false;
+    gamemode = 4;
     resetBoard(true);
     this.disabled = true;
     document.getElementById("gamemodeI").disabled = false;
 
 });
 document.getElementById("gamemodeI").addEventListener("click", function () {
-    gamemode = true;
+    gamemode = 6;
     resetBoard(true);
     this.disabled = true;
     document.getElementById("gamemodeN").disabled = false;
 });
-document.getElementById("size5").addEventListener("click", function () {
-    initTable();
+document.getElementById("size6").addEventListener("click", function () {
+    initTable(6);
     this.disabled = true;
-    document.getElementById("size7").disabled = false;
+    document.getElementById("size8").disabled = false;
 });
-document.getElementById("size7").addEventListener("click", function () {
-    initTable(7);
+document.getElementById("size8").addEventListener("click", function () {
+    initTable(8);
     this.disabled = true;
-    document.getElementById("size5").disabled = false;
+    document.getElementById("size6").disabled = false;
 });
