@@ -26,7 +26,7 @@ var player2 = jsboard.piece({ text: "P2", textIndent: "-9999px", background: "bl
 
 // variables for turns, piece to move and its locs
 var turn = ["P1", "P2"];
-var bindMoveLocs, bindMovePiece;
+var bindMoveLocs, bindMovePiece, firstPiece;
 var gamemode, started, win = false;
 let P1, P2 = [];
 
@@ -39,12 +39,12 @@ let reversePiecesFunction = function () { reversePieces(); };
 initTable();  // 5x5 board
 
 function selectSecond(piece) {
-    showMovesFunction = function () { showMoves(piece, this); };
-    console.log(piece)
     // check if game has ended
     if (win) return
 
     resetBoard()
+
+    firstPiece = piece;
 
     var possiblePairs = getAdjacent(b.cell(piece.parentNode).where())
 
@@ -119,8 +119,8 @@ function reversePieces() {
     winCheck();
 }
 // show new locations 
-function showMoves(piece, secondPiece) {
-    console.log(b.cell(piece.parentNode).get())
+function showMoves(secondPiece) {
+    console.log(b.cell(firstPiece.parentNode).get())
 
     // check if game has ended
     if (win) return
@@ -131,7 +131,7 @@ function showMoves(piece, secondPiece) {
     // on doesn't have access to cell functions, therefore you 
     // need to access the parent of the piece because pieces are 
     // always contained within in cells
-    var loc = b.cell(piece.parentNode).where();
+    var loc = b.cell(firstPiece.parentNode).where();
     var loc2 = b.cell(secondPiece.parentNode).where();
     console.log(`loc: ${loc} loc2: ${loc2}`)
     var newLocs = getMoves(loc, loc2);
@@ -141,7 +141,7 @@ function showMoves(piece, secondPiece) {
     (function removeIllegalMoves(arr) {
         var fixedLocs = [];
         for (var i = 0; i < arr.length; i++)
-            if (b.cell(arr[i][0]).get() == null && b.cell(arr[i][1]).get() == null)
+            if (b.cell(arr[i][0]).get() == null && (b.cell(arr[i][1]).get() == null || arr[i][1].toString() == loc.toString()))
                 fixedLocs.push(arr[i]);
         newLocs = fixedLocs;
     })(newLocs);
@@ -150,7 +150,7 @@ function showMoves(piece, secondPiece) {
 
     // bind green spaces to movement of piece
     bindMoveLocs = newLocs.slice();
-    bindMovePiece = [piece, secondPiece];
+    bindMovePiece = [firstPiece, secondPiece];
     bindMoveEvents(bindMoveLocs);
 }
 
@@ -209,8 +209,6 @@ function movePiece() {
     }
     if (!legalMove) return;
 
-    resetBoard();
-
     b.cell(newpos[0]).place(bindMovePiece[0]);
     b.cell(newpos[1]).place(bindMovePiece[1]);
     console.log(`P1: ${P1} P2: ${P2}`)
@@ -245,6 +243,7 @@ function movePiece() {
             break;
     }
 
+    resetBoard();
     winCheck();
     
 }
@@ -361,9 +360,6 @@ function getGameboard() {
                 case "P2":
                     game[index][index2] = "2";
                     break;
-                case "CO":
-                    game[index][index2] = "3";
-                    break;
             }
         });
     });
@@ -388,7 +384,9 @@ function getMoves(piece, secondPiece) {
         console.log(`newpos: ${newpos} secondnewpos: ${secondnewpos}`);
         if (
             b.cell([newpos[0] + dir[0], newpos[1] + dir[1]]).get() == null &&
-            b.cell([secondnewpos[0] + dir[0], secondnewpos[1] + dir[1]]).get() == null
+            (b.cell([secondnewpos[0] + dir[0], secondnewpos[1] + dir[1]]).get() == null ||
+             [secondnewpos[0] + dir[0], secondnewpos[1] + dir[1]].toString() == newpos.toString()
+            ) 
         ) {
             newpos = [newpos[0] + dir[0], newpos[1] + dir[1]];
             secondnewpos = [secondnewpos[0] + dir[0], secondnewpos[1] + dir[1]];
@@ -404,20 +402,58 @@ function getMoves(piece, secondPiece) {
 
 /**
  * Check if someone has won
- * If gamemode is true, P1 wins if he reaches the P2 side
+ *  Win conditions: 4 pieces in a row/column.
  */
 function winCheck() {
     var game = getGameboard()
 
-    if (game[0].includes("3")) {
-        win = true
-        alert(`${gamemode ? "P1 WINS" : "P2 WINS"}`);
-        document.getElementById("turn").innerHTML = `${gamemode ? "P1 WINS" : "P2 WINS"}`;
-    } else if (game[b.rows() - 1].includes("3")) {
-        win = true
-        alert(`${gamemode ? "P2 WINS" : "P1 WINS"}`);
-        document.getElementById("turn").innerHTML = `${gamemode ? "P2 WINS" : "P1 WINS"}`;
-
+    //Check rows
+    for (var i = 0; i < game.length; i++) {
+        var p1 = 0;
+        var p2 = 0;
+        var co = 0;
+        for (var j = 0; j < game[i].length; j++) {
+            if (p1 == 4 || p2 == 4 || co == 4) break;
+            switch (game[i][j]) {
+                case "1":
+                    p1++;
+                    p2=0;
+                    break;
+                case "2":
+                    p1=0;
+                    p2++;
+                    break;
+            }
+        }
+        if (p1 == 4 || p2 == 4 || co == 4) {
+            win = true;
+            document.getElementById("turn").innerHTML = `Player ${game[i][j]} has won!`;
+            return;
+        }
+    }
+    //Check columns
+    for (var i = 0; i < game.length; i++) {
+        var p1 = 0;
+        var p2 = 0;
+        var co = 0;
+        for (var j = 0; j < game[i].length; j++) {
+            if (p1 == 4 || p2 == 4 || co == 4) break;
+            switch (game[j][i]) {
+                case "1":
+                    p1++;
+                    p2=0;
+                    break;
+                case "2":
+                    p1=0;
+                    p2++;
+                    break;
+            }
+        }
+        if (p1 == 4 || p2 == 4 || co == 4) {
+            win = true;
+            document.getElementById("turn").innerHTML = `Player ${turn[0]} has won!`;
+            return;
+        }
     }
 }
 /**
