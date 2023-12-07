@@ -39,7 +39,13 @@ let reversePiecesFunction = function () { reversePieces(); };
 // create board
 initTable();  // 5x5 board
 
+/**
+ *  Select the second piece to move
+ * @param {*} piece The piece that has been clicked
+ * @returns {void}
+ */
 function selectSecond(piece) {
+
     // check if game has ended
     if (win) return
 
@@ -49,12 +55,17 @@ function selectSecond(piece) {
 
     var possiblePairs = getAdjacent(b.cell(piece.parentNode).where())
 
+    //Add listeners to possible pairs
     possiblePairs.forEach((pair) => {
-        b.cell(pair).DOM().classList.add("red");
-        //TODO: add event listener to move piece to that location, then remove the normal event listener
-        //use P1 and P2 arrays to get the piece to move
-        //Check the pice selected as one array can be omited
-        console.log(`pair: ${pair}`)
+
+        //Add Player color to the possible pairs
+        if (turn[0] == "P1") {
+            b.cell(pair).DOM().classList.add("red");
+        } else b.cell(pair).DOM().classList.add("blue");
+
+        //Add listener to the possible pairs
+        //As you can't click a piece that is the same color as the one you are moving,
+        //there is no need to do a foreach to both P1 and P2 at the same time 
         if (b.cell(piece.parentNode).get() == "P2") {
             P1.forEach((p) => {
                 if (p[1].toString() == pair.toString()) {
@@ -73,17 +84,23 @@ function selectSecond(piece) {
 
     })
 }
+
 /**
- * This function is called when the seccond piece is clicked. Will excange the first and second piece
+ * This function is called when the seccond piece is clicked for a second time. Will excange the first and second piece
  */
 function reversePieces() {
+
     var firstPiece = bindMovePiece[0];
     var secondPiece = bindMovePiece[1];
+
     var firstPos = b.cell(firstPiece.parentNode).where();
     var secondPos = b.cell(secondPiece.parentNode).where();
+
+    //Move pieces
     b.cell(firstPos).place(secondPiece);
     b.cell(secondPos).place(firstPiece);
 
+    //Update P1 and P2 arrays
     P1.find((p) => {
         if (p[1].toString() == firstPos.toString()) {
             p[1] = secondPos;
@@ -113,15 +130,16 @@ function reversePieces() {
         case "P2":
             document.getElementById("turn").innerHTML = `It's P2 turn to move`;
             break;
-        case "CO":
-            document.getElementById("turn").innerHTML = `It's common piece turn (${turn[1]})`;
-            break;
     }
     winCheck();
 }
-// show new locations 
+
+/**
+ * Show the possible moves for the selected pieces
+ * 
+ * @param {HTMLElement} secondPiece The second piece that has been clicked
+ */
 function showMoves(secondPiece) {
-    console.log(b.cell(firstPiece.parentNode).get())
 
     // check if game has ended
     if (win) return
@@ -161,14 +179,21 @@ function showMoves(secondPiece) {
  * @param {Array} locs Possible moves
  */
 function bindMoveEvents(locs) {
+
+    // add color spaces to possible moves
     for (var i = 0; i < locs.length-1; i++) {
-        b.cell(locs[i][0]).DOM().classList.add("green");
-        //b.cell(locs[i][1]).DOM().classList.add("green");
+
+        if (turn[0] == "P1") {
+            b.cell(locs[i][0]).DOM().classList.add("red");
+        } else b.cell(locs[i][0]).DOM().classList.add("blue");
+        
         b.cell(locs[i][0]).on("click", movePiece);
-        //b.cell(locs[i][1]).on("click", movePiece);
     }
-    b.cell(locs[locs.length-1][0]).DOM().classList.add("blue");
-    //Get locs[locs.lenght-1] piece with get
+
+    b.cell(locs[locs.length-1][0]).DOM().classList.add("green");
+
+    // Add listener to the piece that can be clicked
+    // Remove the first listener so you don't trigger two listeners at the same time
     var piece = b.cell(locs[locs.length-1][0]).get()
     if (piece == "P1") {
         P1.forEach((p) => {
@@ -194,10 +219,13 @@ function bindMoveEvents(locs) {
  * @return {void}
  */
 function movePiece() {
+
     started = true;
+
     var userClick = b.cell(this).where();
-    var newpos;
+
     var oldpos = [b.cell(bindMovePiece[0].parentNode).where(), b.cell(bindMovePiece[1].parentNode).where()];
+    var newpos;
 
     // check if user clicked on a green cell
     var legalMove = false;
@@ -210,9 +238,9 @@ function movePiece() {
     }
     if (!legalMove) return;
 
+    //Move pieces
     b.cell(newpos[0]).place(bindMovePiece[0]);
     b.cell(newpos[1]).place(bindMovePiece[1]);
-    console.log(`P1: ${P1} P2: ${P2}`)
 
     //Update P1 and P2 arrays
     P1.forEach((p) => {
@@ -327,7 +355,9 @@ function resetBoard(hard = false) {
 
 
         turn = ["P1", "P2"];
+        document.getElementById("turn").innerHTML = `It's P1 turn to move`;
     }
+    //Remove listeners from pieces, and add the selectSecond (base) listener
     P1.forEach((p) => {
         p[0].addEventListener("click", selectSecondFunction);
         p[0].removeEventListener("click", showMovesFunction);
@@ -379,10 +409,13 @@ function getMoves(piece, secondPiece) {
     var posMoves = [];
 
     for (var i = 0; i < moves.length; i++) {
+
         var dir = moves[i];
         var newpos = piece;
         var secondnewpos = secondPiece;
-        console.log(`newpos: ${newpos} secondnewpos: ${secondnewpos}`);
+        //console.log(`newpos: ${newpos} secondnewpos: ${secondnewpos}`);
+
+        //Check if the piece can move in that direction
         if (
             b.cell([newpos[0] + dir[0], newpos[1] + dir[1]]).get() == null &&
             (b.cell([secondnewpos[0] + dir[0], secondnewpos[1] + dir[1]]).get() == null ||
@@ -396,7 +429,6 @@ function getMoves(piece, secondPiece) {
 
         if (newpos !== piece) posMoves.push([newpos, secondnewpos]);
     }
-    console.log(posMoves);
     return posMoves;
 }
 
@@ -492,6 +524,7 @@ function initTable(size = 6) {
  */
 function getAdjacent(piece) {
     var possible = [];
+
     directions.forEach((dir) => {
         var pos = piece;
         pos = [pos[0] + dir[0], pos[1] + dir[1]];
@@ -499,6 +532,7 @@ function getAdjacent(piece) {
             possible.push(pos);
         }
     })
+    
     return possible;
 }
 
