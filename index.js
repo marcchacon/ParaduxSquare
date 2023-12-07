@@ -21,8 +21,8 @@ const moves = [
 ];
 
 // setup pieces
-var player1 = jsboard.piece({ text: "P1", textIndent: "-9999px", background: "red", width: "50px", height: "50px", margin: "0 auto" });
-var player2 = jsboard.piece({ text: "P2", textIndent: "-9999px", background: "blue", width: "50px", height: "50px", margin: "0 auto" });
+var player1 = jsboard.piece({ text: "P1", textIndent: "-9999px", background: "black", width: "50px", height: "50px", margin: "0 auto" });
+var player2 = jsboard.piece({ text: "P2", textIndent: "-9999px", background: "white", width: "50px", height: "50px", margin: "0 auto" });
 
 // variables for turns, piece to move and its locs
 var turn = ["P1", "P2"];
@@ -353,6 +353,26 @@ function resetBoard(hard = false) {
             switcher = !switcher;
         }
 
+        if (b.cols()  >= 8) {
+            posP1 = [3, 2];
+            posP2 = [3, b.rows()-3];
+            P1.push([player1.clone(), posP1]);
+            P2.push([player2.clone(), posP2]);
+            b.cell(posP1).place(P1[P1.length - 1][0]);
+            b.cell(posP2).place(P2[P2.length - 1][0]);
+            P1[P1.length - 1][0].addEventListener("click", selectSecondFunction);
+            P2[P2.length - 1][0].addEventListener("click", selectSecondFunction);
+
+            posP1 = [4, b.rows()-3];
+            posP2 = [4, 2];
+            P1.push([player1.clone(), posP1]);
+            P2.push([player2.clone(), posP2]);
+            b.cell(posP1).place(P1[P1.length - 1][0]);
+            b.cell(posP2).place(P2[P2.length - 1][0]);
+            P1[P1.length - 1][0].addEventListener("click", selectSecondFunction);
+            P2[P2.length - 1][0].addEventListener("click", selectSecondFunction);
+        } 
+
 
         turn = ["P1", "P2"];
         document.getElementById("turn").innerHTML = `It's P1 turn to move`;
@@ -510,7 +530,7 @@ function initTable(size = 6) {
     }
 
     b = jsboard.board({ attach: "game", size: `${size}x${size}` });
-    b.cell("each").style({ width: "65px", height: "65px" });
+    b.cell("each").style({ width: "65px", height: "65px", background: "#C4A484" });
     started = false;
     resetBoard(true);
 
@@ -532,7 +552,7 @@ function getAdjacent(piece) {
             possible.push(pos);
         }
     })
-    
+
     return possible;
 }
 
