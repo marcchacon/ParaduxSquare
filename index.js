@@ -36,7 +36,7 @@ let selectSecondFunction = function () { selectSecond(this); };
 let showMovesFunction = function () { showMoves(this); };
 let reversePiecesFunction = function () { reversePieces(); };
 
-// create board
+
 initTable();  // 5x5 board
 
 /**
@@ -160,7 +160,7 @@ function showMoves(secondPiece) {
     (function removeIllegalMoves(arr) {
         var fixedLocs = [];
         for (var i = 0; i < arr.length; i++)
-            if (b.cell(arr[i][0]).get() == null && (b.cell(arr[i][1]).get() == null || arr[i][1].toString() == loc.toString()))
+            if (b.cell(arr[i][0]).get() == null && (b.cell(arr[i][1]).get() == null || arr[i][1].toString() == loc2.toString()))
                 fixedLocs.push(arr[i]);
         newLocs = fixedLocs;
     })(newLocs);
@@ -520,10 +520,12 @@ function winCheck() {
         }
     }
 }
+
 /**
- * Init table to an Empty table
+ * Init game deleteing all rows and cols and creating a new board
  */
 function initTable(size = 6) {
+    
     var table = document.getElementById("game");
     while (table.rows.length > 0) {
         table.deleteRow(0);
