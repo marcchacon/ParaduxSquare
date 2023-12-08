@@ -21,8 +21,8 @@ const moves = [
 ];
 
 // setup pieces
-var player1 = jsboard.piece({ text: "P1", textIndent: "-9999px", background: "black", width: "60px", height: "60px", margin: "0 auto", "border-radius": "50%" });
-var player2 = jsboard.piece({ text: "P2", textIndent: "-9999px", background: "white", width: "60px", height: "60px", margin: "0 auto", "border-radius": "50%" });
+var player1 = jsboard.piece({ text: "P1", textIndent: "-9999px", background: "white", width: "60px", height: "60px", margin: "0 auto", "border-radius": "50%" });
+var player2 = jsboard.piece({ text: "P2", textIndent: "-9999px", background: "black", width: "60px", height: "60px", margin: "0 auto", "border-radius": "50%" });
 
 // variables for turns, piece to move and its locs
 var turn = ["P1", "P2"];
@@ -59,7 +59,7 @@ function selectSecond(piece) {
     possiblePairs.forEach((pair) => {
 
         //Add Player color to the possible pairs
-        if (turn[0] == "P1") {
+        if (turn[0] == "P2") {
             b.cell(pair).DOM().classList.add("red");
         } else b.cell(pair).DOM().classList.add("blue");
 
@@ -153,7 +153,7 @@ function showMoves(secondPiece) {
     var loc = b.cell(firstPiece.parentNode).where();
     var loc2 = b.cell(secondPiece.parentNode).where();
     console.log(`loc: ${loc} loc2: ${loc2}`)
-    var newLocs = getMoves(loc, loc2);
+    var newLocs = getMoves(loc2, loc);
 
     // remove illegal moves by checking 
     // content of b.cell().get()
@@ -169,7 +169,7 @@ function showMoves(secondPiece) {
 
     // bind green spaces to movement of piece
     bindMoveLocs = newLocs.slice();
-    bindMovePiece = [firstPiece, secondPiece];
+    bindMovePiece = [secondPiece, firstPiece];
     bindMoveEvents(bindMoveLocs);
 }
 
@@ -183,7 +183,7 @@ function bindMoveEvents(locs) {
     // add color spaces to possible moves
     for (var i = 0; i < locs.length-1; i++) {
 
-        if (turn[0] == "P1") {
+        if (turn[0] == "P2") {
             b.cell(locs[i][0]).DOM().classList.add("red");
         } else b.cell(locs[i][0]).DOM().classList.add("blue");
         
