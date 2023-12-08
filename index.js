@@ -21,8 +21,8 @@ const moves = [
 ];
 
 // setup pieces
-var player1 = jsboard.piece({ text: "P1", textIndent: "-9999px", background: "black", width: "50px", height: "50px", margin: "0 auto" });
-var player2 = jsboard.piece({ text: "P2", textIndent: "-9999px", background: "white", width: "50px", height: "50px", margin: "0 auto" });
+var player1 = jsboard.piece({ text: "P1", textIndent: "-9999px", background: "black", width: "60px", height: "60px", margin: "0 auto", "border-radius": "50%" });
+var player2 = jsboard.piece({ text: "P2", textIndent: "-9999px", background: "white", width: "60px", height: "60px", margin: "0 auto", "border-radius": "50%" });
 
 // variables for turns, piece to move and its locs
 var turn = ["P1", "P2"];
